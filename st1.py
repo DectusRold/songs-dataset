@@ -31,11 +31,11 @@ year_range = (df['year'].min(), df['year'].max())
 #st.subheader("Data summary")
 #st.write(df.describe())
 
-st.subheader("Distinct genres")
+#st.subheader("Distinct genres")
 all_genres = df['artist_genres'].str.split(',').explode().str.strip().unique()
 #all_genres_as_str = all_genres.astype(str)
 #all_genres_sorted = sorted(all_genres_as_str)
-st.write(all_genres)
+#st.write(all_genres)
 
 # Filter songs:
 st.subheader("Filter release year")
@@ -43,10 +43,17 @@ filter_years = st.slider("Years", 1970, 1980, year_range)
 
 # Show a multiselect widget with the genres using `st.multiselect`.
 top_genres=["Rock", "Pop", "Metal", "Hard Rock", "Techno", "Dance", "Electro", "Indie", "Grunge", "Hip-Hip"]
+#filter_genres = st.multiselect(
+#    "Genres",
+#    top_genres,
+#    ["Rock", "Pop"],
+#)
+
+st.subheader("Filter genre")
 filter_genres = st.multiselect(
     "Genres",
-    top_genres,
-    ["Rock", "Pop"],
+    all_genres,
+    [],
 )
 
 #st.subheader("Filter data")
@@ -59,6 +66,10 @@ filter_genres = st.multiselect(
 #filtered_df = df[df[selected_column] == selected_value]
 
 filtered_df = df[df["year"].between(filter_years[0], filter_years[1])]
+
+genre_regex_pattern = '|'.join(filter_genres)  # Regex mit "oder"-Operator
+filtered_df = filtered_df[df['artist_genres'].str.contains(genre_regex_pattern, case=False, na=False)]  # Filtern
+
 
 #filtered_df = filtered_df.style.format({
 #    'year': '{:.0f}'
